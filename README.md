@@ -29,6 +29,9 @@ pip install -r setup/azure_document/requirements.txt
 
 # Google Cloud Vision (requires GCP account and credentials)
 pip install -r setup/google_vision/requirements.txt
+
+# Google Cloud Document AI (requires GCP account and credentials)
+pip install -r setup/google_document/requirements.txt
 ```
 
 See `setup/{system}/README.md` for detailed installation instructions.

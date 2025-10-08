@@ -71,6 +71,12 @@ class OCRParser:
         text = raw_data.get('fullTextAnnotation', {}).get('text', '').replace('\n', ' ')
         return text
     
+    @staticmethod
+    def parse_google_document(raw_data: Dict[str, Any]) -> str:
+        """Parse Google Document AI raw output and return extracted text"""
+        text = raw_data.get('document', {}).get('text', '').replace('\n', ' ')
+        return text
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -83,6 +89,7 @@ class OCRParser:
             'azure_vision': OCRParser.parse_azure_vision,
             'azure_document': OCRParser.parse_azure_document,
             'google_vision': OCRParser.parse_google_vision,
+            'google_document': OCRParser.parse_google_document,
         }
         
         return parsers.get(system_name, lambda x: "")

@@ -13,11 +13,11 @@ from .commercial_ocr.aws_textract import AWSTextractOCR
 from .commercial_ocr.azure_vision import AzureVisionOCR
 from .commercial_ocr.azure_document import AzureDocumentOCR
 from .commercial_ocr.google_vision import GoogleVisionOCR
+from .commercial_ocr.google_document import GoogleDocumentOCR
 
 
 '''
 
-from .commercial_ocr.google_document import GoogleDocumentOCR
 
 from .opensource_llm.gemma3 import Gemma3OCR
 from .opensource_llm.qwen25vl import Qwen25VLOCR
@@ -28,7 +28,6 @@ from .commercial_llm.claude_haiku import ClaudeHaikuOCR
 from .commercial_llm.mistral_ocr import MistralOCR
 
 # Register all available OCR systems
-OCRSystemFactory.register_system('google_document', GoogleDocumentOCR)
 OCRSystemFactory.register_system('gemma3', Gemma3OCR)
 OCRSystemFactory.register_system('qwen25vl', Qwen25VLOCR)
 OCRSystemFactory.register_system('gpt4o', GPT4oOCR)
@@ -46,6 +45,7 @@ OCRSystemFactory.register_system('aws_textract', AWSTextractOCR)
 OCRSystemFactory.register_system('azure_vision', AzureVisionOCR)
 OCRSystemFactory.register_system('azure_document', AzureDocumentOCR)
 OCRSystemFactory.register_system('google_vision', GoogleVisionOCR)
+OCRSystemFactory.register_system('google_document', GoogleDocumentOCR)
 
 def get_ocr_system(name: str, config: dict):
     """Get OCR system instance"""
