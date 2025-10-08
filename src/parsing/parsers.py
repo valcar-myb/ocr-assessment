@@ -35,19 +35,15 @@ class OCRParser:
     @staticmethod
     def parse_tesseract(raw_data: Dict[str, Any]) -> str:
         """Parse Tesseract raw output and return extracted text"""
-        # Tesseract raw output is typically just text
-        return raw_data.get('text', '')
+        import re
+        text = raw_data.get('text', '')
+        # Replace newlines with spaces
+        text = text.replace('\n', ' ')
+        # Remove multiple consecutive spaces
+        text = re.sub(r'\s+', ' ', text)
+        # Strip leading/trailing whitespace
+        return text.strip()
     
-    @staticmethod
-    def parse_easyocr(raw_data: Dict[str, Any]) -> str:
-        """Parse EasyOCR raw output and return extracted text"""
-        texts = []
-        results = raw_data.get('results', [])
-        for result in results:
-            if isinstance(result, list) and len(result) >= 2:
-                # EasyOCR format: [[bbox], text, confidence]
-                texts.append(result[1])
-        return " ".join(texts)
     
     @staticmethod
     def get_parser(system_name: str):

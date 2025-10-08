@@ -7,6 +7,7 @@ from .models import OCRSystemFactory
 # Import from organized modules
 from .opensource_ocr.doctr import DocTROCR
 from .opensource_ocr.paddleocr import PaddleOCROCR
+from .opensource_ocr.tesseract import TesseractOCR
 
 '''
 from .opensource_ocr.tesseract import TesseractOCR
@@ -45,6 +46,7 @@ OCRSystemFactory.register_system('mistral_ocr', MistralOCR)
 
 OCRSystemFactory.register_system('doctr', DocTROCR)
 OCRSystemFactory.register_system('paddleocr', PaddleOCROCR)
+OCRSystemFactory.register_system('tesseract', TesseractOCR)
 
 def get_ocr_system(name: str, config: dict):
     """Get OCR system instance"""

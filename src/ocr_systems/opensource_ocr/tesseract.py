@@ -4,7 +4,7 @@ Tesseract OCR implementation
 
 import pytesseract
 from PIL import Image
-from typing import List
+from typing import Dict, Any
 from ocr_systems.models import OCRSystem
 
 class TesseractOCR(OCRSystem):
@@ -13,26 +13,33 @@ class TesseractOCR(OCRSystem):
     def __init__(self, name: str, config: dict):
         super().__init__(name, config)
         self.language = config.get('language', 'eng')
-        self.psm = config.get('psm', 6)
+        self.psm = config.get('psm', 3)
+        self.oem = config.get('oem', 3)
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from single image using Tesseract"""
-        try:
-            image = Image.open(image_path)
-            text = pytesseract.image_to_string(
-                image, 
-                lang=self.language,
-                config=f'--psm {self.psm}'
-            )
-            return text.strip()
-        except Exception as e:
-            print(f"Error processing {image_path}: {e}")
-            return ""
-    
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw Tesseract output from image"""
+        image = Image.open(image_path)
+        
+        # Get detailed data from Tesseract
+        data = pytesseract.image_to_data(
+            image,
+            lang=self.language,
+            config=f'--psm {self.psm} --oem {self.oem}',
+            output_type=pytesseract.Output.DICT
+        )
+        
+        # Get text
+        text = pytesseract.image_to_string(
+            image,
+            lang=self.language,
+            config=f'--psm {self.psm} --oem {self.oem}'
+        )
+        
+        # Return comprehensive raw output
+        return {
+            'text': text.strip(),
+            'data': data,
+            'language': self.language,
+            'psm': self.psm,
+            'oem': self.oem
+        }
