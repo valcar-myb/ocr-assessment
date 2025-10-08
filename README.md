@@ -4,48 +4,51 @@ Repository for evaluating and comparing modern OCR systems in the era of LLMs.
 
 ## Setup
 
-1. Install core dependencies:
+Install OCR systems (choose based on what you need):
+
 ```bash
-pip install -r requirements.txt
+# DocTR
+pip install -r setup/doctr/requirements.txt
+
+# PaddleOCR
+pip install -r setup/paddleocr/requirements.txt
+
+# Tesseract (see setup/tesseract/README.md for system installation)
+pip install -r setup/tesseract/requirements.txt
 ```
 
-2. Install specific system requirements (choose based on systems you want to evaluate):
+See `setup/{system}/README.md` for detailed installation instructions.
+
+## Usage
+
+### 1. Prepare datasets
+See `data/README.md` for dataset preparation instructions.
+
+### 2. Configure experiment
+Edit `config/experiments.yaml` to select datasets, OCR systems, and metrics.
+
+### 3. Run OCR extraction
 ```bash
-# Open-source OCR engines
-pip install -r requirements/opensource_ocr.txt
-
-# Commercial OCR services  
-pip install -r requirements/commercial_ocr.txt
-
-# Open-source multimodal LLMs
-pip install -r requirements/opensource_llm.txt
-
-# Commercial multimodal LLMs
-pip install -r requirements/commercial_llm.txt
+python experiments/run_pipeline.py --step extract
 ```
 
-3. Download datasets (see `data/README.md`)
-
-4. Configure experiment in `config/experiments.yaml`
-
-5. Run assessment:
+### 4. Generate text files
 ```bash
-python experiments/run_assessment.py
+python experiments/generate_text.py
+```
+
+### 5. Run evaluation
+```bash
+python experiments/run_pipeline.py --step evaluate
 ```
 
 ## Structure
 
-- `config/`: Experiment configuration files
-- `src/`: Source code modules organized by system type
-  - `ocr_systems/`: OCR system implementations
-    - `opensource_ocr/`: Tesseract, PaddleOCR, EasyOCR, DocTR
-    - `commercial_ocr/`: Azure, Google, AWS services
-    - `opensource_llm/`: Gemma 3, Qwen2.5-VL
-    - `commercial_llm/`: GPT-4o, Gemini, Claude, MistralOCR
-  - `evaluation/`: Evaluation metrics and framework
-  - `utils/`: Utility functions
-- `data/`: Dataset directory with download instructions
-- `experiments/`: Main experiment scripts
-- `results/`: Output metrics and results
-- `notebooks/`: Analysis notebooks
-- `requirements/`: Separate dependency files for each system category
+- `setup/`: Installation instructions and requirements per OCR system
+- `src/`: Source code
+  - `ocr_systems/`: OCR system implementations (DocTR, PaddleOCR, Tesseract)
+  - `parsing/`: Parsers for raw OCR outputs
+  - `evaluation/`: Evaluation metrics
+- `data/`: Dataset directory
+- `experiments/`: Pipeline scripts
+- `results/`: Generated outputs (not tracked)
