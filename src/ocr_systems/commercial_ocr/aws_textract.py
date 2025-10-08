@@ -3,58 +3,46 @@ AWS Textract OCR implementation
 """
 
 import boto3
-import json
-from typing import List
-from .models import OCRSystem
+from typing import Dict, Any
+from ..models import OCRSystem
+
 
 class AWSTextractOCR(OCRSystem):
     """AWS Textract OCR implementation"""
     
     def __init__(self, name: str, config: dict):
         super().__init__(name, config)
-        self.region_name = config.get('region_name', 'us-east-1')
-        self.aws_access_key_id = config.get('aws_access_key_id')
-        self.aws_secret_access_key = config.get('aws_secret_access_key')
-        
-        # Initialize Textract client
-        if self.aws_access_key_id and self.aws_secret_access_key:
-            self.client = boto3.client(
-                'textract',
-                region_name=self.region_name,
-                aws_access_key_id=self.aws_access_key_id,
-                aws_secret_access_key=self.aws_secret_access_key
-            )
-        else:
-            # Use default credentials
-            self.client = boto3.client('textract', region_name=self.region_name)
+        self.model = None
+        self._init_predictor()
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from single image using AWS Textract"""
+    def _init_predictor(self):
+        """Initialize AWS Textract client"""
         try:
-            # Read image
-            with open(image_path, 'rb') as image_file:
-                image_bytes = image_file.read()
+            self.model = boto3.client(
+                service_name='textract',
+                aws_access_key_id=self.config.get('aws_access_key_id'),
+                aws_secret_access_key=self.config.get('aws_secret_access_key'),
+                region_name=self.config.get('region_name', 'us-east-1')
+            )
+        except Exception as e:
+            print(f"Error initializing AWS Textract client: {e}")
+            raise
+    
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw output from AWS Textract"""
+        try:
+            # Read image file
+            with open(image_path, 'rb') as img:
+                img_bytes = img.read()
             
-            # Call Textract
-            response = self.client.detect_document_text(
-                Document={'Bytes': image_bytes}
+            # Call Textract API
+            response = self.model.detect_document_text(
+                Document={
+                    'Bytes': img_bytes
+                }
             )
             
-            # Extract text
-            text_lines = []
-            for block in response['Blocks']:
-                if block['BlockType'] == 'LINE':
-                    text_lines.append(block['Text'])
-            
-            return ' '.join(text_lines)
+            return response
         except Exception as e:
-            print(f"Error processing {image_path}: {e}")
-            return ""
-    
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
+            print(f"Error extracting raw output with AWS Textract: {e}")
+            return {}

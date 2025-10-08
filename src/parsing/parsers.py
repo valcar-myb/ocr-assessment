@@ -44,6 +44,13 @@ class OCRParser:
         # Strip leading/trailing whitespace
         return text.strip()
     
+    @staticmethod
+    def parse_aws_textract(raw_data: Dict[str, Any]) -> str:
+        """Parse AWS Textract raw output and return extracted text"""
+        blocks = raw_data.get('Blocks', [])
+        lines = [block['Text'] for block in blocks if block.get('BlockType') == 'LINE']
+        return ' '.join(lines)
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -52,7 +59,7 @@ class OCRParser:
             'doctr': OCRParser.parse_doctr,
             'paddleocr': OCRParser.parse_paddleocr,
             'tesseract': OCRParser.parse_tesseract,
-            'easyocr': OCRParser.parse_easyocr,
+            'aws_textract': OCRParser.parse_aws_textract,
         }
         
         return parsers.get(system_name, lambda x: "")

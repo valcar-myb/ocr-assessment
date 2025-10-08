@@ -9,9 +9,10 @@ from .opensource_ocr.doctr import DocTROCR
 from .opensource_ocr.paddleocr import PaddleOCROCR
 from .opensource_ocr.tesseract import TesseractOCR
 
+from .commercial_ocr.aws_textract import AWSTextractOCR
+
+
 '''
-from .opensource_ocr.tesseract import TesseractOCR
-from .opensource_ocr.paddleocr import PaddleOCRSystem
 
 from .commercial_ocr.azure_vision import AzureVisionOCR
 from .commercial_ocr.azure_document import AzureDocumentOCR
@@ -47,6 +48,8 @@ OCRSystemFactory.register_system('mistral_ocr', MistralOCR)
 OCRSystemFactory.register_system('doctr', DocTROCR)
 OCRSystemFactory.register_system('paddleocr', PaddleOCROCR)
 OCRSystemFactory.register_system('tesseract', TesseractOCR)
+
+OCRSystemFactory.register_system('aws_textract', AWSTextractOCR)
 
 def get_ocr_system(name: str, config: dict):
     """Get OCR system instance"""

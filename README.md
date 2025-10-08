@@ -7,6 +7,7 @@ Repository for evaluating and comparing modern OCR systems in the era of LLMs.
 Install OCR systems (choose based on what you need):
 
 ```bash
+# Open-source OCR systems
 # DocTR
 pip install -r setup/doctr/requirements.txt
 
@@ -15,6 +16,10 @@ pip install -r setup/paddleocr/requirements.txt
 
 # Tesseract (see setup/tesseract/README.md for system installation)
 pip install -r setup/tesseract/requirements.txt
+
+# Commercial OCR systems
+# AWS Textract (requires AWS account and credentials)
+pip install -r setup/aws_textract/requirements.txt
 ```
 
 See `setup/{system}/README.md` for detailed installation instructions.
@@ -46,7 +51,11 @@ python experiments/run_pipeline.py --step evaluate
 
 - `setup/`: Installation instructions and requirements per OCR system
 - `src/`: Source code
-  - `ocr_systems/`: OCR system implementations (DocTR, PaddleOCR, Tesseract)
+  - `ocr_systems/`: OCR system implementations
+    - `opensource_ocr/`: Open-source systems (DocTR, PaddleOCR, Tesseract)
+    - `commercial_ocr/`: Commercial systems (AWS Textract, Azure, Google)
+    - `opensource_llm/`: Open-source LLM systems
+    - `commercial_llm/`: Commercial LLM systems
   - `parsing/`: Parsers for raw OCR outputs
   - `evaluation/`: Evaluation metrics
 - `data/`: Dataset directory
