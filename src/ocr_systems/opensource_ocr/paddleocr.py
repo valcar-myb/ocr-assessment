@@ -1,0 +1,78 @@
+"""
+PaddleOCR implementation
+"""
+
+import time
+from typing import Dict, Any, List
+from ..models import OCRSystem
+
+
+class PaddleOCROCR(OCRSystem):
+    """PaddleOCR implementation"""
+    
+    def __init__(self, name: str, config: dict):
+        super().__init__(name, config)
+        self.model = None
+        self._init_predictor()
+    
+    def _init_predictor(self):
+        """Initialize PaddleOCR model"""
+        try:
+            import paddleocr
+            self.model = paddleocr.PaddleOCR(
+                use_doc_orientation_classify=False, 
+                use_doc_unwarping=False, 
+                use_textline_orientation=False,
+                text_detection_model_name=self.config.get("det_model", "PP-OCRv3"),
+                text_recognition_model_name=self.config.get("rec_model", "PP-OCRv3"),
+                lang=self.config.get("lang", "en")
+            )
+        except ImportError:
+            print("PaddleOCR not installed. Please install with: pip install paddleocr")
+            raise
+    
+    def extract_text(self, image_path: str) -> str:
+        """Extract text from image using PaddleOCR"""
+        try:
+            result = self.model.predict(image_path)
+            # PaddleOCR returns a list, take the first result
+            if result and len(result) > 0:
+                raw_output = result[0]._to_json().get("res", {})
+                return self.parse_raw_output(raw_output)
+            return ""
+        except Exception as e:
+            print(f"Error extracting text with PaddleOCR: {e}")
+            return ""
+    
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw output from PaddleOCR"""
+        try:
+            result = self.model.predict(image_path)
+            if result and len(result) > 0:
+                # Convert to JSON format
+                return result[0]._to_json().get("res", {})
+            return {}
+        except Exception as e:
+            print(f"Error extracting raw output with PaddleOCR: {e}")
+            return {}
+    
+    def parse_raw_output(self, raw_data: Dict[str, Any]) -> str:
+        """Parse PaddleOCR raw output and return extracted text"""
+        try:
+            # PaddleOCR stores text in 'rec_texts' list
+            rec_texts = raw_data.get('rec_texts', [])
+            if rec_texts:
+                return " ".join(rec_texts)
+            return ""
+        except Exception as e:
+            print(f"Error parsing PaddleOCR raw output: {e}")
+            return ""
+    
+    
+    def batch_extract(self, image_paths: List[str]) -> List[str]:
+        """Extract text from multiple images"""
+        results = []
+        for image_path in image_paths:
+            text = self.extract_text(image_path)
+            results.append(text)
+        return results

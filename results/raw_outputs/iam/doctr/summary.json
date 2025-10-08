@@ -1,0 +1,7 @@
+{
+  "dataset": "iam",
+  "system": "doctr",
+  "total_images": 0,
+  "processed_files": [],
+  "output_directory": "results/raw_outputs/iam/doctr"
+}
