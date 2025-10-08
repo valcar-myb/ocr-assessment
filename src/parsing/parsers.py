@@ -51,6 +51,13 @@ class OCRParser:
         lines = [block['Text'] for block in blocks if block.get('BlockType') == 'LINE']
         return ' '.join(lines)
     
+    @staticmethod
+    def parse_azure_vision(raw_data: Dict[str, Any]) -> str:
+        """Parse Azure Vision raw output and return extracted text"""
+        blocks = raw_data.get('readResult', {}).get('blocks', [])
+        lines = [line['text'] for block in blocks for line in block.get('lines', [])]
+        return ' '.join(lines)
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -60,6 +67,7 @@ class OCRParser:
             'paddleocr': OCRParser.parse_paddleocr,
             'tesseract': OCRParser.parse_tesseract,
             'aws_textract': OCRParser.parse_aws_textract,
+            'azure_vision': OCRParser.parse_azure_vision,
         }
         
         return parsers.get(system_name, lambda x: "")

@@ -2,66 +2,56 @@
 Microsoft Azure AI Vision OCR implementation
 """
 
-import requests
-import base64
-import json
-from typing import List
-from .models import OCRSystem
+from typing import Dict, Any
+from ..models import OCRSystem
+
 
 class AzureVisionOCR(OCRSystem):
     """Microsoft Azure AI Vision OCR implementation"""
     
     def __init__(self, name: str, config: dict):
         super().__init__(name, config)
-        self.endpoint = config.get('endpoint')
-        self.api_key = config.get('api_key')
-        self.version = config.get('version', '2023-02-01-preview')
-        
-        if not self.endpoint or not self.api_key:
-            raise ValueError("Azure endpoint and api_key are required")
+        self.model = None
+        self._init_predictor()
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from single image using Azure Vision API"""
+    def _init_predictor(self):
+        """Initialize Azure Vision client"""
         try:
-            # Read image and encode
-            with open(image_path, 'rb') as image_file:
-                image_data = base64.b64encode(image_file.read()).decode('utf-8')
+            from azure.ai.vision.imageanalysis import ImageAnalysisClient
+            from azure.ai.vision.imageanalysis.models import VisualFeatures
+            from azure.core.credentials import AzureKeyCredential
             
-            # Prepare request
-            url = f"{self.endpoint}/vision/v4.0/ocr"
-            headers = {
-                'Ocp-Apim-Subscription-Key': self.api_key,
-                'Content-Type': 'application/json'
-            }
+            # Store VisualFeatures for later use
+            self.visual_features = VisualFeatures
             
-            body = {
-                'url': f"data:image/jpeg;base64,{image_data}"
-            }
-            
-            # Make request
-            response = requests.post(url, headers=headers, json=body)
-            response.raise_for_status()
-            
-            # Parse response
-            result = response.json()
-            
-            # Extract text
-            text_lines = []
-            if 'regions' in result:
-                for region in result['regions']:
-                    for line in region.get('lines', []):
-                        line_text = ' '.join([word.get('text', '') for word in line.get('words', [])])
-                        text_lines.append(line_text)
-            
-            return ' '.join(text_lines)
+            self.model = ImageAnalysisClient(
+                endpoint=self.config.get('endpoint'),
+                credential=AzureKeyCredential(
+                    key=self.config.get('credential')
+                )
+            )
+        except ImportError:
+            print("Azure AI Vision SDK not installed. Please install with: pip install azure-ai-vision-imageanalysis")
+            raise
         except Exception as e:
-            print(f"Error processing {image_path}: {e}")
-            return ""
+            print(f"Error initializing Azure Vision client: {e}")
+            raise
     
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw output from Azure Vision"""
+        try:
+            # Read image file
+            with open(image_path, 'rb') as f:
+                image_data = f.read()
+            
+            # Call Azure Vision API
+            result = self.model.analyze(
+                image_data=image_data,
+                visual_features=[self.visual_features.READ],
+                model_version=self.config.get('model_version', 'latest')
+            )
+            
+            return result.as_dict()
+        except Exception as e:
+            print(f"Error extracting raw output with Azure Vision: {e}")
+            return {}
