@@ -2,8 +2,7 @@
 PaddleOCR implementation
 """
 
-import time
-from typing import Dict, Any, List
+from typing import Dict, Any
 from ..models import OCRSystem
 
 
@@ -31,19 +30,6 @@ class PaddleOCROCR(OCRSystem):
             print("PaddleOCR not installed. Please install with: pip install paddleocr")
             raise
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from image using PaddleOCR"""
-        try:
-            result = self.model.predict(image_path)
-            # PaddleOCR returns a list, take the first result
-            if result and len(result) > 0:
-                raw_output = result[0]._to_json().get("res", {})
-                return self.parse_raw_output(raw_output)
-            return ""
-        except Exception as e:
-            print(f"Error extracting text with PaddleOCR: {e}")
-            return ""
-    
     def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
         """Extract raw output from PaddleOCR"""
         try:
@@ -55,17 +41,3 @@ class PaddleOCROCR(OCRSystem):
         except Exception as e:
             print(f"Error extracting raw output with PaddleOCR: {e}")
             return {}
-    
-    def parse_raw_output(self, raw_data: Dict[str, Any]) -> str:
-        """Parse PaddleOCR raw output and return extracted text"""
-        from parsing.parsers import OCRParser
-        return OCRParser.parse_paddleocr(raw_data)
-    
-    
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results

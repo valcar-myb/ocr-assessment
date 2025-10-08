@@ -19,27 +19,10 @@ class OCRSystem(ABC):
         self.output_dir.mkdir(parents=True, exist_ok=True)
     
     @abstractmethod
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from image"""
-        pass
-    
-    @abstractmethod
     def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
         """Extract raw OCR output from image"""
         pass
     
-    @abstractmethod
-    def parse_raw_output(self, raw_data: Dict[str, Any]) -> str:
-        """Parse raw OCR output and return extracted text"""
-        pass
-    
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
     
     def batch_extract_and_save(self, image_paths: List[str], dataset_name: str) -> str:
         """Extract text from multiple images and save raw outputs individually"""
@@ -116,13 +99,6 @@ class OCRSystem(ABC):
         
         return str(dataset_system_dir)
     
-    def get_system_info(self) -> Dict[str, Any]:
-        """Get system information"""
-        return {
-            "name": self.name,
-            "config": self.config
-        }
-
 class OCRSystemFactory:
     """Factory for creating OCR systems"""
     
