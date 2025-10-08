@@ -72,3 +72,10 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
+
+
+
+data/raw/
+results/
+config/
+notebooks/
