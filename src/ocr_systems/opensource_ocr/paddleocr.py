@@ -58,15 +58,8 @@ class PaddleOCROCR(OCRSystem):
     
     def parse_raw_output(self, raw_data: Dict[str, Any]) -> str:
         """Parse PaddleOCR raw output and return extracted text"""
-        try:
-            # PaddleOCR stores text in 'rec_texts' list
-            rec_texts = raw_data.get('rec_texts', [])
-            if rec_texts:
-                return " ".join(rec_texts)
-            return ""
-        except Exception as e:
-            print(f"Error parsing PaddleOCR raw output: {e}")
-            return ""
+        from parsing.parsers import OCRParser
+        return OCRParser.parse_paddleocr(raw_data)
     
     
     def batch_extract(self, image_paths: List[str]) -> List[str]:

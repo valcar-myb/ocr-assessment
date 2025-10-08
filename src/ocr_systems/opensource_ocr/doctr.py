@@ -71,20 +71,5 @@ class DocTROCR(OCRSystem):
     
     def parse_raw_output(self, raw_data: Dict[str, Any]) -> str:
         """Parse DocTR raw output and return extracted text"""
-        try:
-            text_lines = []
-            for page in raw_data.get('pages', []):
-                for block in page.get('blocks', []):
-                    for line in block.get('lines', []):
-                        # Extract words from line
-                        words = []
-                        for word in line.get('words', []):
-                            if isinstance(word, dict) and 'value' in word:
-                                words.append(word['value'])
-                        if words:
-                            text_lines.append(' '.join(words))
-            
-            return '\n'.join(text_lines)
-        except Exception as e:
-            print(f"Error parsing DocTR raw output: {e}")
-            return ""
+        from parsing.parsers import OCRParser
+        return OCRParser.parse_doctr(raw_data)

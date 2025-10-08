@@ -79,3 +79,5 @@ data/raw/
 results/
 config/
 notebooks/
+requirements/
+requirements.txt

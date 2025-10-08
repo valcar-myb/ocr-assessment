@@ -11,7 +11,7 @@ from pathlib import Path
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
-from ocr_systems import get_ocr_system
+from parsing.parsers import OCRParser
 
 def main():
     parser = argparse.ArgumentParser(description='Generate text files from raw OCR outputs')
@@ -33,8 +33,8 @@ def main():
             
             print(f"Processing {dataset_name}/{system_name}")
             
-            # Initialize OCR system
-            ocr_system = get_ocr_system(system_name, ocr_config['config'])
+            # Get parser for this system
+            parse_func = OCRParser.get_parser(system_name)
             
             # Find raw files
             raw_dir = Path(args.raw_dir) / dataset_name / system_name
@@ -53,7 +53,7 @@ def main():
                     data = json.load(f)
                 
                 # Parse and save
-                text = ocr_system.parse_raw_output(data['raw_output'])
+                text = parse_func(data['raw_output'])
                 image_name = data['image_filename']
                 txt_file = output_dir / f"{Path(image_name).stem}.txt"
                 
