@@ -1,6 +1,0 @@
-# Open-source OCR engines requirements
-pytesseract>=0.3.10
-paddleocr>=2.6.0
-easyocr>=1.6.0
-doctr>=0.8.1
-Pillow>=8.3.0

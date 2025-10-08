@@ -1,7 +1,0 @@
-{
-  "dataset": "iam",
-  "system": "paddleocr",
-  "total_images": 0,
-  "processed_files": [],
-  "output_directory": "results/raw_outputs/iam/paddleocr"
-}

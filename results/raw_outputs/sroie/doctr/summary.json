@@ -1,9 +1,0 @@
-{
-  "dataset": "sroie",
-  "system": "doctr",
-  "total_images": 1,
-  "processed_files": [
-    "results/raw_outputs/sroie/doctr/X00016469670_raw.json"
-  ],
-  "output_directory": "results/raw_outputs/sroie/doctr"
-}
