@@ -32,7 +32,7 @@ This directory contains implementations of open-source OCR systems for the bench
 - **Recognition Architecture**: `crnn_vgg16_bn` (CRNN with VGG16-BN backbone)
 - **Pretrained**: Yes (using pretrained weights)
 - **Device**: CPU (configurable to GPU with CUDA)
-- **Features**: End-to-end document understanding
+- - **Features**: Two-stage approach (detection + recognition)
 
 ## Architecture
 
