@@ -23,6 +23,9 @@ pip install -r setup/aws_textract/requirements.txt
 
 # Azure AI Vision (requires Azure account and credentials)
 pip install -r setup/azure_vision/requirements.txt
+
+# Azure Document Intelligence (requires Azure account and credentials)
+pip install -r setup/azure_document/requirements.txt
 ```
 
 See `setup/{system}/README.md` for detailed installation instructions.

@@ -2,76 +2,52 @@
 Microsoft Azure Document Intelligence OCR implementation
 """
 
-import requests
-import json
-from typing import List
-from .models import OCRSystem
+from typing import Dict, Any
+from ..models import OCRSystem
+
 
 class AzureDocumentOCR(OCRSystem):
     """Microsoft Azure Document Intelligence OCR implementation"""
     
     def __init__(self, name: str, config: dict):
         super().__init__(name, config)
-        self.endpoint = config.get('endpoint')
-        self.api_key = config.get('api_key')
-        self.model_id = config.get('model_id', 'prebuilt-read')
-        
-        if not self.endpoint or not self.api_key:
-            raise ValueError("Azure endpoint and api_key are required")
+        self.model = None
+        self._init_predictor()
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from single image using Azure Document Intelligence"""
+    def _init_predictor(self):
+        """Initialize Azure Document Intelligence client"""
         try:
-            # Read image
-            with open(image_path, 'rb') as image_file:
-                image_data = image_file.read()
+            from azure.ai.documentintelligence import DocumentIntelligenceClient
+            from azure.core.credentials import AzureKeyCredential
             
-            # Prepare request
-            url = f"{self.endpoint}/formrecognizer/documentModels/{self.model_id}:analyze"
-            headers = {
-                'Ocp-Apim-Subscription-Key': self.api_key,
-                'Content-Type': 'application/octet-stream'
-            }
-            
-            # Make request
-            response = requests.post(url, headers=headers, data=image_data)
-            response.raise_for_status()
-            
-            # Get operation location
-            operation_location = response.headers.get('Operation-Location')
-            if not operation_location:
-                raise ValueError("No operation location returned")
-            
-            # Poll for results
-            import time
-            while True:
-                result_response = requests.get(operation_location, headers={'Ocp-Apim-Subscription-Key': self.api_key})
-                result_response.raise_for_status()
-                result = result_response.json()
-                
-                if result.get('status') == 'succeeded':
-                    break
-                elif result.get('status') == 'failed':
-                    raise ValueError(f"Analysis failed: {result.get('error', {}).get('message', 'Unknown error')}")
-                
-                time.sleep(1)
-            
-            # Extract text
-            text_lines = []
-            if 'analyzeResult' in result and 'pages' in result['analyzeResult']:
-                for page in result['analyzeResult']['pages']:
-                    for line in page.get('lines', []):
-                        text_lines.append(line.get('content', ''))
-            
-            return ' '.join(text_lines)
+            self.model = DocumentIntelligenceClient(
+                endpoint=self.config.get('endpoint'),
+                credential=AzureKeyCredential(
+                    key=self.config.get('credential')
+                )
+            )
+        except ImportError:
+            print("Azure Document Intelligence SDK not installed. Please install with: pip install azure-ai-documentintelligence")
+            raise
         except Exception as e:
-            print(f"Error processing {image_path}: {e}")
-            return ""
+            print(f"Error initializing Azure Document Intelligence client: {e}")
+            raise
     
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw output from Azure Document Intelligence"""
+        try:
+            # Read image file
+            with open(image_path, 'rb') as image_file:
+                content = image_file.read()
+            
+            # Call Azure Document Intelligence API
+            poller = self.model.begin_analyze_document(
+                model_id=self.config.get('model_id', 'prebuilt-read'),
+                body=content
+            )
+            
+            result = poller.result()
+            return result.as_dict()
+        except Exception as e:
+            print(f"Error extracting raw output with Azure Document Intelligence: {e}")
+            return {}

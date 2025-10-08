@@ -58,6 +58,13 @@ class OCRParser:
         lines = [line['text'] for block in blocks for line in block.get('lines', [])]
         return ' '.join(lines)
     
+    @staticmethod
+    def parse_azure_document(raw_data: Dict[str, Any]) -> str:
+        """Parse Azure Document Intelligence raw output and return extracted text"""
+        pages = raw_data.get('pages', [])
+        lines = [line['content'] for page in pages for line in page.get('lines', [])]
+        return ' '.join(lines)
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -68,6 +75,7 @@ class OCRParser:
             'tesseract': OCRParser.parse_tesseract,
             'aws_textract': OCRParser.parse_aws_textract,
             'azure_vision': OCRParser.parse_azure_vision,
+            'azure_document': OCRParser.parse_azure_document,
         }
         
         return parsers.get(system_name, lambda x: "")
