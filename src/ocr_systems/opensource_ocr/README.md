@@ -64,22 +64,6 @@ Each system returns a raw output that is then parsed by the corresponding parser
 - **PaddleOCR**: Returns `rec_texts` array with detected text lines
 - **DocTR**: Returns hierarchical structure with `pages`, `blocks`, `lines`, and `words`
 
-## Model Characteristics
-
-### Tesseract
-- **Pros**: Mature, widely used, good for printed text
-- **Cons**: Less accurate on complex layouts compared to deep learning methods
-- **Best for**: Clean documents, printed text
-
-### PaddleOCR
-- **Pros**: High accuracy, multilingual support, active development
-- **Cons**: Heavier than Tesseract, requires more resources
-- **Best for**: General-purpose OCR, Asian languages
-
-### DocTR
-- **Pros**: Modern architecture, document-level understanding, PyTorch-based
-- **Cons**: Requires more computational resources
-- **Best for**: Document analysis, structured documents
 
 ## Usage
 
