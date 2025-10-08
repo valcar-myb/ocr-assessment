@@ -65,6 +65,12 @@ class OCRParser:
         lines = [line['content'] for page in pages for line in page.get('lines', [])]
         return ' '.join(lines)
     
+    @staticmethod
+    def parse_google_vision(raw_data: Dict[str, Any]) -> str:
+        """Parse Google Vision raw output and return extracted text"""
+        text = raw_data.get('fullTextAnnotation', {}).get('text', '').replace('\n', ' ')
+        return text
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -76,6 +82,7 @@ class OCRParser:
             'aws_textract': OCRParser.parse_aws_textract,
             'azure_vision': OCRParser.parse_azure_vision,
             'azure_document': OCRParser.parse_azure_document,
+            'google_vision': OCRParser.parse_google_vision,
         }
         
         return parsers.get(system_name, lambda x: "")

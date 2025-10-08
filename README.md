@@ -26,6 +26,9 @@ pip install -r setup/azure_vision/requirements.txt
 
 # Azure Document Intelligence (requires Azure account and credentials)
 pip install -r setup/azure_document/requirements.txt
+
+# Google Cloud Vision (requires GCP account and credentials)
+pip install -r setup/google_vision/requirements.txt
 ```
 
 See `setup/{system}/README.md` for detailed installation instructions.
