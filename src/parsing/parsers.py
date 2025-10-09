@@ -104,6 +104,13 @@ class OCRParser:
         contents = [content['text'] for content in raw_data.get('content', [])]
         return ' '.join(contents).replace('\n', ' ')
     
+    @staticmethod
+    def parse_mistral_ocr(raw_data: Dict[str, Any]) -> str:
+        """Parse Mistral OCR raw output and return extracted text"""
+        pages = raw_data.get('pages', [])
+        markdowns = [page['markdown'] for page in pages]
+        return ' '.join(markdowns).replace('\n', ' ')
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -120,6 +127,7 @@ class OCRParser:
             'gpt4o': OCRParser.parse_gpt4o,
             'gemini_flash': OCRParser.parse_gemini_flash,
             'claude_haiku': OCRParser.parse_claude_haiku,
+            'mistral_ocr': OCRParser.parse_mistral_ocr,
         }
         
         return parsers.get(system_name, lambda x: "")

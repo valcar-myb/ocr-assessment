@@ -42,6 +42,9 @@ pip install -r setup/gemini_flash/requirements.txt
 
 # Anthropic Claude Haiku (requires Anthropic API key and credits)
 pip install -r setup/claude_haiku/requirements.txt
+
+# Mistral OCR (requires Mistral AI API key)
+pip install -r setup/mistral_ocr/requirements.txt
 ```
 
 See `setup/{system}/README.md` for detailed installation instructions.

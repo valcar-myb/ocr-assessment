@@ -1,76 +1,52 @@
 """
-MistralOCR Commercial LLM implementation
+Mistral OCR Vision implementation
 """
 
-import requests
 import base64
-import json
-from typing import List
-from .models import OCRSystem
+from typing import Dict, Any
+from ..models import OCRSystem
+
 
 class MistralOCR(OCRSystem):
-    """MistralOCR Commercial LLM implementation"""
+    """Mistral OCR implementation"""
     
     def __init__(self, name: str, config: dict):
         super().__init__(name, config)
-        self.api_key = config.get('api_key')
-        self.endpoint = config.get('endpoint', 'https://api.mistral.ai/v1/chat/completions')
-        self.model = config.get('model', 'mistral-ocr')
-        
-        if not self.api_key:
-            raise ValueError("Mistral API key is required")
-        
-        # OCR-specific prompt for structured output
-        self.ocr_prompt = config.get('ocr_prompt', 
-            "Extract all text from this document image. Return the text content in a structured format preserving the layout.")
+        self.model = None
+        self._init_predictor()
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from single image using MistralOCR"""
+    def _init_predictor(self):
+        """Initialize Mistral client"""
         try:
-            # Encode image
-            with open(image_path, 'rb') as image_file:
-                base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+            from mistralai import Mistral
             
-            # Prepare request
-            headers = {
-                'Authorization': f'Bearer {self.api_key}',
-                'Content-Type': 'application/json'
-            }
-            
-            payload = {
-                'model': self.model,
-                'messages': [
-                    {
-                        'role': 'user',
-                        'content': [
-                            {'type': 'text', 'text': self.ocr_prompt},
-                            {
-                                'type': 'image_url',
-                                'image_url': {
-                                    'url': f'data:image/jpeg;base64,{base64_image}'
-                                }
-                            }
-                        ]
-                    }
-                ],
-                'max_tokens': 1000,
-                'temperature': 0.1
-            }
-            
-            # Make API call
-            response = requests.post(self.endpoint, headers=headers, json=payload)
-            response.raise_for_status()
-            
-            result = response.json()
-            return result['choices'][0]['message']['content'].strip()
+            self.model = Mistral(
+                api_key=self.config.get('api_key')
+            )
+        except ImportError:
+            print("Mistral AI package not installed. Please install with: pip install mistralai")
+            raise
         except Exception as e:
-            print(f"Error processing {image_path}: {e}")
-            return ""
+            print(f"Error initializing Mistral client: {e}")
+            raise
     
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw output from Mistral OCR"""
+        try:
+            # Read and encode image
+            with open(image_path, 'rb') as img_file:
+                img = base64.b64encode(img_file.read()).decode('utf-8')
+            
+            # Call Mistral OCR API
+            ocr_response = self.model.ocr.process(
+                model=self.config.get('model', 'pixtral-12b-2409'),
+                document={
+                    'type': 'image_url',
+                    'image_url': f'data:image/jpeg;base64,{img}'
+                }
+            )
+            
+            return ocr_response.model_dump()
+        except Exception as e:
+            print(f"Error extracting raw output with Mistral OCR: {e}")
+            return {}
