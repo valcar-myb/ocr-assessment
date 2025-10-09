@@ -4,10 +4,10 @@ This directory contains implementations of open-source multimodal LLMs for OCR t
 
 ## Implemented Systems
 
-| System | Model Name | Parameters | HuggingFace Model ID | Min GPU VRAM |
-|--------|------------|------------|----------------------|--------------|
-| **Qwen 2.5 VL** | Qwen2.5-VL-3B-Instruct | 3B | `Qwen/Qwen2.5-VL-3B-Instruct` | 12GB |
-| **Gemma 3** | Gemma-3-2B-IT | 2B | `google/gemma-3-2b-it` | 8GB |
+| System | Model Name | Parameters | HuggingFace Model ID |
+|--------|------------|------------|----------------------|
+| **Qwen 2.5 VL** | Qwen2.5-VL-3B-Instruct | 3B | `Qwen/Qwen2.5-VL-3B-Instruct` |
+| **Gemma 3** | Gemma-3-2B-IT | 2B | `google/gemma-3-2b-it` | 
 
 ## Architecture
 
