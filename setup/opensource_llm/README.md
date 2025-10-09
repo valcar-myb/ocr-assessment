@@ -152,19 +152,6 @@ All open-source LLM implementations:
 3. Parse responses in OpenAI chat completion format
 4. Return raw JSON output for evaluation
 
-## Advantages
-
-- **Free to run**: No API costs (only compute costs)
-- **Privacy**: Data stays local, no external API calls
-- **Customizable**: Full control over model and parameters
-- **Reproducible**: Deterministic results with temperature=0.0
-
-## Considerations
-
-- **Infrastructure**: Requires GPU server (local or cloud)
-- **Setup**: More complex than API-based solutions
-- **Maintenance**: Need to manage server and model updates
-- **Speed**: Depends on GPU hardware
 
 ## Complete Workflow
 
