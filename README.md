@@ -1,53 +1,26 @@
 # OCR Systems Assessment
 
-Repository for evaluating and comparing modern OCR systems in the era of LLMs.
+Repository for evaluating and comparing commercial and open-source OCR systems and multimodal LLMs on text recognition.
 
 ## Setup
 
-Install OCR systems (choose based on what you need):
+This repository includes **14 OCR systems** across 4 categories:
+- **3 Open-source OCR**: Tesseract, PaddleOCR, DocTR
+- **5 Commercial OCR**: AWS Textract, Azure Vision, Azure Document Intelligence, Google Vision, Google Document AI
+- **4 Commercial LLM**: GPT-4o, Gemini Flash, Claude Haiku, Mistral Document AI
+- **2 Open-source LLM** (via vLLM with OpenAI-compatible API): Qwen 2.5 VL, Gemma 3
 
+**Installation:**
 ```bash
-# Open-source OCR systems
-# DocTR
-pip install -r setup/doctr/requirements.txt
-
-# PaddleOCR
-pip install -r setup/paddleocr/requirements.txt
-
-# Tesseract (see setup/tesseract/README.md for system installation)
-pip install -r setup/tesseract/requirements.txt
-
-# Commercial OCR systems
-# AWS Textract (requires AWS account and credentials)
-pip install -r setup/aws_textract/requirements.txt
-
-# Azure AI Vision (requires Azure account and credentials)
-pip install -r setup/azure_vision/requirements.txt
-
-# Azure Document Intelligence (requires Azure account and credentials)
-pip install -r setup/azure_document/requirements.txt
-
-# Google Cloud Vision (requires GCP account and credentials)
-pip install -r setup/google_vision/requirements.txt
-
-# Google Cloud Document AI (requires GCP account and credentials)
-pip install -r setup/google_document/requirements.txt
-
-# Commercial LLM systems
-# OpenAI GPT-4o (requires OpenAI API key and credits)
-pip install -r setup/gpt4o/requirements.txt
-
-# Google Gemini Flash (requires Google AI API key)
-pip install -r setup/gemini_flash/requirements.txt
-
-# Anthropic Claude Haiku (requires Anthropic API key and credits)
-pip install -r setup/claude_haiku/requirements.txt
-
-# Mistral OCR (requires Mistral AI API key)
-pip install -r setup/mistral_ocr/requirements.txt
+# Install dependencies for a specific system
+pip install -r setup/{system_name}/requirements.txt
 ```
 
-See `setup/{system}/README.md` for detailed installation instructions.
+See `setup/{system}/README.md` for detailed setup instructions, including:
+- System-specific requirements
+- Authentication and credentials setup
+- Configuration parameters
+- Pricing details (for commercial systems)
 
 ## Usage
 
