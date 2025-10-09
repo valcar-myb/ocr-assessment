@@ -77,6 +77,16 @@ class OCRParser:
         text = raw_data.get('document', {}).get('text', '').replace('\n', ' ')
         return text
     
+    @staticmethod
+    def parse_gpt4o(raw_data: Dict[str, Any]) -> str:
+        """Parse GPT-4o Vision raw output and return extracted text"""
+        contents = [
+            choice['message']['content'] 
+            for choice in raw_data.get('choices', []) 
+            if 'message' in choice
+        ]
+        return ' '.join(contents).replace('\n', ' ')
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -90,6 +100,7 @@ class OCRParser:
             'azure_document': OCRParser.parse_azure_document,
             'google_vision': OCRParser.parse_google_vision,
             'google_document': OCRParser.parse_google_document,
+            'gpt4o': OCRParser.parse_gpt4o,
         }
         
         return parsers.get(system_name, lambda x: "")

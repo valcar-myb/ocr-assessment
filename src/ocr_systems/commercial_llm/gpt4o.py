@@ -1,66 +1,67 @@
 """
-GPT-4o Commercial LLM implementation
+OpenAI GPT-4o Vision OCR implementation
 """
 
-import openai
 import base64
-from typing import List
-from .models import OCRSystem
+from typing import Dict, Any
+from ..models import OCRSystem
+
 
 class GPT4oOCR(OCRSystem):
-    """GPT-4o Commercial LLM OCR implementation"""
+    """OpenAI GPT-4o Vision OCR implementation"""
     
     def __init__(self, name: str, config: dict):
         super().__init__(name, config)
-        self.api_key = config.get('api_key')
-        self.model = config.get('model', 'gpt-4o')
-        
-        if not self.api_key:
-            raise ValueError("OpenAI API key is required")
-        
-        self.client = openai.OpenAI(api_key=self.api_key)
-        
-        # OCR-specific prompt
-        self.ocr_prompt = config.get('ocr_prompt', 
-            "Extract all text from this image. Return only the text content without any additional formatting or explanation.")
+        self.model = None
+        self._init_predictor()
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from single image using GPT-4o"""
+    def _init_predictor(self):
+        """Initialize OpenAI client"""
         try:
-            # Encode image
-            with open(image_path, 'rb') as image_file:
-                base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+            from openai import OpenAI as OpenAIClient
             
-            # Make API call
-            response = self.client.chat.completions.create(
-                model=self.model,
+            self.model = OpenAIClient(
+                api_key=self.config.get('api_key')
+            )
+        except ImportError:
+            print("OpenAI package not installed. Please install with: pip install openai")
+            raise
+        except Exception as e:
+            print(f"Error initializing OpenAI client: {e}")
+            raise
+    
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw output from GPT-4o Vision"""
+        try:
+            # Read and encode image
+            with open(image_path, 'rb') as img_file:
+                img = base64.b64encode(img_file.read()).decode('utf-8')
+            
+            # Call GPT-4o Vision API
+            response = self.model.chat.completions.create(
+                model=self.config.get('model', 'gpt-4o'),
                 messages=[
                     {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": self.ocr_prompt},
+                        'role': 'user',
+                        'content': [
                             {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:image/jpeg;base64,{base64_image}"
+                                'type': 'text',
+                                'text': self.config.get('prompt', 'Extract all visible text from this document image. Return only the text')
+                            },
+                            {
+                                'type': 'image_url',
+                                'image_url': {
+                                    'url': f'data:image/jpeg;base64,{img}'
                                 }
                             }
                         ]
                     }
                 ],
-                max_tokens=1000,
-                temperature=0.1
+                max_tokens=self.config.get('max_tokens', 4096),
+                temperature=self.config.get('temperature', 0.0)
             )
             
-            return response.choices[0].message.content.strip()
+            return response.model_dump()
         except Exception as e:
-            print(f"Error processing {image_path}: {e}")
-            return ""
-    
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
+            print(f"Error extracting raw output with GPT-4o: {e}")
+            return {}

@@ -32,6 +32,10 @@ pip install -r setup/google_vision/requirements.txt
 
 # Google Cloud Document AI (requires GCP account and credentials)
 pip install -r setup/google_document/requirements.txt
+
+# Commercial LLM systems
+# OpenAI GPT-4o (requires OpenAI API key and credits)
+pip install -r setup/gpt4o/requirements.txt
 ```
 
 See `setup/{system}/README.md` for detailed installation instructions.
