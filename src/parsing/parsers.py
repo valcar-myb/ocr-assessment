@@ -87,6 +87,17 @@ class OCRParser:
         ]
         return ' '.join(contents).replace('\n', ' ')
     
+    @staticmethod
+    def parse_gemini_flash(raw_data: Dict[str, Any]) -> str:
+        """Parse Gemini Flash raw output and return extracted text"""
+        candidates = raw_data.get('candidates', [])
+        parts = [
+            part['text'] 
+            for candidate in candidates 
+            for part in candidate.get('content', {}).get('parts', [])
+        ]
+        return ' '.join(parts).replace('\n', ' ')
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -101,6 +112,7 @@ class OCRParser:
             'google_vision': OCRParser.parse_google_vision,
             'google_document': OCRParser.parse_google_document,
             'gpt4o': OCRParser.parse_gpt4o,
+            'gemini_flash': OCRParser.parse_gemini_flash,
         }
         
         return parsers.get(system_name, lambda x: "")

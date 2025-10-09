@@ -1,51 +1,59 @@
 """
-Gemini 2.0 Flash Commercial LLM implementation
+Google Gemini Flash Vision OCR implementation
 """
 
-import google.generativeai as genai
-from PIL import Image
-from typing import List
-from .models import OCRSystem
+from typing import Dict, Any
+from ..models import OCRSystem
+
 
 class GeminiFlashOCR(OCRSystem):
-    """Gemini 2.0 Flash Commercial LLM OCR implementation"""
+    """Google Gemini Flash Vision OCR implementation"""
     
     def __init__(self, name: str, config: dict):
         super().__init__(name, config)
-        self.api_key = config.get('api_key')
-        self.model_name = config.get('model_name', 'gemini-2.0-flash-exp')
-        
-        if not self.api_key:
-            raise ValueError("Google API key is required")
-        
-        genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel(self.model_name)
-        
-        # OCR-specific prompt
-        self.ocr_prompt = config.get('ocr_prompt', 
-            "Extract all text from this image. Return only the text content without any additional formatting or explanation.")
+        self.model = None
+        self._init_predictor()
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from single image using Gemini 2.0 Flash"""
+    def _init_predictor(self):
+        """Initialize Google Gemini client"""
         try:
-            # Load image
-            image = Image.open(image_path)
+            from google import genai
             
-            # Generate content
-            response = self.model.generate_content([
-                self.ocr_prompt,
-                image
-            ])
-            
-            return response.text.strip()
+            self.model = genai.Client(
+                api_key=self.config.get('api_key')
+            )
+            # Store genai module for later use
+            self.genai = genai
+        except ImportError:
+            print("Google GenAI package not installed. Please install with: pip install google-genai")
+            raise
         except Exception as e:
-            print(f"Error processing {image_path}: {e}")
-            return ""
+            print(f"Error initializing Google Gemini client: {e}")
+            raise
     
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw output from Gemini Flash Vision"""
+        try:
+            from PIL import Image
+            from google.genai import types
+            
+            # Open image
+            img = Image.open(image_path)
+            
+            # Prepare prompt
+            prompt = self.config.get('prompt', 'Extract all visible text from this document image. Return only the text')
+            
+            # Call Gemini API
+            response = self.model.models.generate_content(
+                model=self.config.get('model', 'gemini-2.0-flash-exp'),
+                contents=[img, prompt],
+                config=types.GenerateContentConfig(
+                    max_output_tokens=self.config.get('max_tokens', 8192),
+                    temperature=self.config.get('temperature', 0.0)
+                )
+            )
+            
+            return response.model_dump()
+        except Exception as e:
+            print(f"Error extracting raw output with Gemini Flash: {e}")
+            return {}
