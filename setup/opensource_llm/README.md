@@ -12,10 +12,10 @@ Open-source LLMs are served on a **separate GPU server** using [vLLM](https://gi
 
 ## Supported Models
 
-| Model | HuggingFace ID | Min VRAM | Recommended Port |
-|-------|----------------|----------|------------------|
-| Qwen 2.5 VL (3B) | `Qwen/Qwen2.5-VL-3B-Instruct` | 12GB | 8000 |
-| Gemma 3 (2B) | `google/gemma-3-2b-it` | 8GB | 8001 |
+| Model | HuggingFace ID |
+|-------|----------------|
+| Qwen 2.5 VL (3B) | `Qwen/Qwen2.5-VL-3B-Instruct`|
+| Gemma 3 (2B) | `google/gemma-3-2b-it` |
 
 ## Target Machine Requirements
 
