@@ -111,6 +111,16 @@ class OCRParser:
         markdowns = [page['markdown'] for page in pages]
         return ' '.join(markdowns).replace('\n', ' ')
     
+    @staticmethod
+    def parse_vllm_openai(raw_data: Dict[str, Any]) -> str:
+        """Parse vLLM OpenAI-compatible raw output and return extracted text"""
+        contents = [
+            choice['message']['content'] 
+            for choice in raw_data.get('choices', []) 
+            if 'message' in choice
+        ]
+        return ' '.join(contents).replace('\n', ' ')
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -128,6 +138,9 @@ class OCRParser:
             'gemini_flash': OCRParser.parse_gemini_flash,
             'claude_haiku': OCRParser.parse_claude_haiku,
             'mistral_ocr': OCRParser.parse_mistral_ocr,
+            # Open-source LLMs via vLLM use OpenAI-compatible format
+            'qwen25vl': OCRParser.parse_vllm_openai,
+            'gemma3': OCRParser.parse_vllm_openai,
         }
         
         return parsers.get(system_name, lambda x: "")

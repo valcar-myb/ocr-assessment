@@ -16,9 +16,12 @@ This repository includes **14 OCR systems** across 4 categories:
 pip install -r setup/{system_name}/requirements.txt
 ```
 
+**Note**: Open-source LLMs require a running vLLM server. See `setup/opensource_llm/README.md` for server setup.
+
 See `setup/{system}/README.md` for detailed setup instructions, including:
 - System-specific requirements
-- Authentication and credentials setup
+- Authentication and credentials setup (for commercial systems)
+- vLLM server configuration (for open-source LLMs)
 - Configuration parameters
 - Pricing details (for commercial systems)
 
