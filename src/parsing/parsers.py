@@ -98,6 +98,12 @@ class OCRParser:
         ]
         return ' '.join(parts).replace('\n', ' ')
     
+    @staticmethod
+    def parse_claude_haiku(raw_data: Dict[str, Any]) -> str:
+        """Parse Claude Haiku raw output and return extracted text"""
+        contents = [content['text'] for content in raw_data.get('content', [])]
+        return ' '.join(contents).replace('\n', ' ')
+    
     
     @staticmethod
     def get_parser(system_name: str):
@@ -113,6 +119,7 @@ class OCRParser:
             'google_document': OCRParser.parse_google_document,
             'gpt4o': OCRParser.parse_gpt4o,
             'gemini_flash': OCRParser.parse_gemini_flash,
+            'claude_haiku': OCRParser.parse_claude_haiku,
         }
         
         return parsers.get(system_name, lambda x: "")

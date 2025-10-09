@@ -39,6 +39,9 @@ pip install -r setup/gpt4o/requirements.txt
 
 # Google Gemini Flash (requires Google AI API key)
 pip install -r setup/gemini_flash/requirements.txt
+
+# Anthropic Claude Haiku (requires Anthropic API key and credits)
+pip install -r setup/claude_haiku/requirements.txt
 ```
 
 See `setup/{system}/README.md` for detailed installation instructions.

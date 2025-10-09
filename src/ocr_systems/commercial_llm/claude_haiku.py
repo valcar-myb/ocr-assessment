@@ -1,68 +1,77 @@
 """
-Claude 3.5 Haiku Commercial LLM implementation
+Anthropic Claude Haiku Vision OCR implementation
 """
 
-import anthropic
 import base64
-from typing import List
-from .models import OCRSystem
+from typing import Dict, Any
+from ..models import OCRSystem
+
 
 class ClaudeHaikuOCR(OCRSystem):
-    """Claude 3.5 Haiku Commercial LLM OCR implementation"""
+    """Anthropic Claude Haiku Vision OCR implementation"""
     
     def __init__(self, name: str, config: dict):
         super().__init__(name, config)
-        self.api_key = config.get('api_key')
-        self.model = config.get('model', 'claude-3-5-haiku-20241022')
-        
-        if not self.api_key:
-            raise ValueError("Anthropic API key is required")
-        
-        self.client = anthropic.Anthropic(api_key=self.api_key)
-        
-        # OCR-specific prompt
-        self.ocr_prompt = config.get('ocr_prompt', 
-            "Extract all text from this image. Return only the text content without any additional formatting or explanation.")
+        self.model = None
+        self._init_predictor()
     
-    def extract_text(self, image_path: str) -> str:
-        """Extract text from single image using Claude 3.5 Haiku"""
+    def _init_predictor(self):
+        """Initialize Anthropic Claude client"""
         try:
-            # Encode image
-            with open(image_path, 'rb') as image_file:
-                image_data = base64.b64encode(image_file.read()).decode('utf-8')
+            import anthropic
             
-            # Make API call
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=1000,
-                temperature=0.1,
+            self.model = anthropic.Anthropic(
+                api_key=self.config.get('api_key')
+            )
+        except ImportError:
+            print("Anthropic package not installed. Please install with: pip install anthropic")
+            raise
+        except Exception as e:
+            print(f"Error initializing Anthropic Claude client: {e}")
+            raise
+    
+    def extract_raw_output(self, image_path: str) -> Dict[str, Any]:
+        """Extract raw output from Claude Haiku Vision"""
+        try:
+            # Read and encode image
+            with open(image_path, 'rb') as img_file:
+                img = base64.b64encode(img_file.read()).decode('utf-8')
+            
+            # Determine image type (Claude only accepts jpeg, png, gif, webp)
+            img_type = image_path.split('.')[-1].lower()
+            if img_type not in ['jpeg', 'png', 'gif', 'webp']:
+                img_type = 'jpeg'
+            
+            # Prepare prompt
+            prompt = self.config.get('prompt', 'Extract all visible text from this document image. Return only the text')
+            
+            # Call Claude API
+            response = self.model.messages.create(
+                model=self.config.get('model', 'claude-3-5-haiku-20241022'),
+                max_tokens=self.config.get('max_tokens', 4096),
+                temperature=self.config.get('temperature', 0.0),
                 messages=[
                     {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": self.ocr_prompt},
+                        'role': 'user',
+                        'content': [
                             {
-                                "type": "image",
-                                "source": {
-                                    "type": "base64",
-                                    "media_type": "image/jpeg",
-                                    "data": image_data
+                                'type': 'image',
+                                'source': {
+                                    'type': 'base64',
+                                    'media_type': f'image/{img_type}',
+                                    'data': img
                                 }
+                            },
+                            {
+                                'type': 'text',
+                                'text': prompt
                             }
                         ]
                     }
                 ]
             )
             
-            return response.content[0].text.strip()
+            return response.model_dump()
         except Exception as e:
-            print(f"Error processing {image_path}: {e}")
-            return ""
-    
-    def batch_extract(self, image_paths: List[str]) -> List[str]:
-        """Extract text from multiple images"""
-        results = []
-        for image_path in image_paths:
-            text = self.extract_text(image_path)
-            results.append(text)
-        return results
+            print(f"Error extracting raw output with Claude Haiku: {e}")
+            return {}
