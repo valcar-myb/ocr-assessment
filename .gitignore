@@ -77,7 +77,11 @@ dmypy.json
 
 data/raw/
 results/
+legacy_results/
 config/
 notebooks/
 requirements/
 requirements.txt
+
+
+experiments/verify_utf8.py
