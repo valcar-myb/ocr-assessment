@@ -11,6 +11,7 @@ from .metrics import (
 )
 from .evaluator import AccuracyEvaluator
 from .ocreval_wrapper import OCREvalWrapper
+from .visualization import generate_accuracy_visualizations
 
 __all__ = [
     'calculate_cer',
@@ -18,6 +19,7 @@ __all__ = [
     'calculate_character_accuracy',
     'calculate_word_accuracy',
     'AccuracyEvaluator',
-    'OCREvalWrapper'
+    'OCREvalWrapper',
+    'generate_accuracy_visualizations'
 ]
 
