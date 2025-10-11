@@ -18,9 +18,6 @@ def filter_outliers(times: List[float], iqr_factor: float = 1.5) -> List[float]:
     Returns:
         Filtered list of timing values
     """
-    if len(times) < 4:
-        # Not enough data for outlier filtering
-        return times
     
     q1 = np.percentile(times, 25)
     q3 = np.percentile(times, 75)
@@ -29,10 +26,6 @@ def filter_outliers(times: List[float], iqr_factor: float = 1.5) -> List[float]:
     upper_bound = q3 + iqr_factor * iqr
     
     filtered_times = [t for t in times if lower_bound <= t <= upper_bound]
-    
-    # If filtering removes too many values, return original
-    if len(filtered_times) < len(times) * 0.5:
-        return times
     
     return filtered_times
 

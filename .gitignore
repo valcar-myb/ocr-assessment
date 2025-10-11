@@ -85,3 +85,7 @@ requirements.txt
 
 
 experiments/verify_utf8.py
+
+
+rename_text_files.py
+clean
