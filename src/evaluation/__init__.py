@@ -4,5 +4,6 @@ Contains accuracy, time, and cost evaluation components
 """
 
 from .accuracy import AccuracyEvaluator
+from .time import TimeEvaluator
 
-__all__ = ['AccuracyEvaluator']
+__all__ = ['AccuracyEvaluator', 'TimeEvaluator']
