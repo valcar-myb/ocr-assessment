@@ -44,11 +44,11 @@ Cleaned text: 1072 -> 1023 characters
 
 ## Setup
 
-This repository includes **15 OCR systems** across 4 categories:
+This repository includes **14 OCR systems** across 4 categories:
 - **3 Open-source OCR**: Tesseract, PaddleOCR, DocTR
 - **5 Commercial OCR**: AWS Textract, Azure Vision, Azure Document Intelligence, Google Vision, Google Document AI
 - **4 Commercial LLM**: GPT-4o, Gemini Flash, Claude Haiku, Mistral Document AI
-- **3 Open-source LLM** (via vLLM with OpenAI-compatible API): Qwen 2.5 VL, Gemma 3, PaddleOCR-FT
+- **3 Open-source LLM** (via vLLM with OpenAI-compatible API): Qwen 2.5 VL, Gemma 3
 
 ### OCR System Installation
 
